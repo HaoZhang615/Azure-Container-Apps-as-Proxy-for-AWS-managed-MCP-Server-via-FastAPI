@@ -14,8 +14,8 @@ This solution provides a production-ready proxy that enables Microsoft Copilot S
 
 ```bash
 # Clone and navigate to the project
-git clone <your-repo>
-cd DSM-F_MCP
+git clone https://github.com/HaoZhang615/Azure-Container-Apps-as-Proxy-for-AWS-managed-MCP-Server-via-FastAPI.git
+cd Azure-Container-Apps-as-Proxy-for-AWS-managed-MCP-Server-via-FastAPI
 
 # Copy the environment template
 cp .env.template .env
@@ -64,11 +64,11 @@ cp .env.template .env
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `AWS_CLIENT_ID` | AWS Cognito Client ID | `2p3li5ek3qlc2bvna7lk0ob4j2` |
+| `AWS_CLIENT_ID` | AWS Cognito Client ID | `2p3li5ek3...` |
 | `AWS_CLIENT_SECRET` | AWS Cognito Client Secret | `1ok90cr91cmjlj...` |
-| `AWS_AUTH_URL` | Cognito OAuth2 token endpoint | `https://us-east-18ptqx8m4m.auth.us-east-1.amazoncognito.com/oauth2/token` |
-| `AWS_MCP_URL` | AWS MCP server endpoint | `https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn...` |
-| `AWS_SCOPE` | OAuth2 scope for AWS access | `default-m2m-resource-server-uesuni/read` |
+| `AWS_AUTH_URL` | Cognito OAuth2 token endpoint | `https://<your-cognito-domain>.amazoncognito.com/oauth2/token` |
+| `AWS_MCP_URL` | AWS MCP server endpoint | `https://<your-bedrock-region>.amazonaws.com/runtimes/arn...` |
+| `AWS_SCOPE` | OAuth2 scope for AWS access | `<your-scope>/read` |
 
 ### Security Notes
 
