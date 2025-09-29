@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "awsClientId": {
+      "value": "${AWS_CLIENT_ID}"
+    },
+    "awsClientSecret": {
+      "value": "${AWS_CLIENT_SECRET}"
+    },
+    "awsAuthUrl": {
+      "value": "${AWS_AUTH_URL}"
+    },
+    "awsMcpUrl": {
+      "value": "${AWS_MCP_URL}"
+    },
+    "awsScope": {
+      "value": "${AWS_SCOPE}"
+    }
+  }
+}

@@ -1,0 +1,103 @@
+# The Azure Developer CLI uses this file to help generate resources
+# and deployment actions for your application.
+
+name: dsm-aws-mcp-proxy
+metadata:
+  template: minimal
+services:
+  proxy:
+    project: ./
+    language: python
+    host: containerapp
+
+hooks:
+  preprovision:
+    windows:
+      shell: pwsh
+      run: |
+        Write-Host "🔄 Running preprovision hook..."
+        Write-Host "Loading environment variables from .env file..."
+        if (Test-Path .env) {
+          $envVars = @()
+          Get-Content .env | ForEach-Object {
+            $line = $_.Trim()
+            if ($line -and !$line.StartsWith('#') -and $line.Contains('=')) {
+              $parts = $line.Split('=', 2)
+              if ($parts.Length -eq 2) {
+                $name = $parts[0].Trim()
+                $value = $parts[1].Trim()
+                # Remove quotes if present
+                if ($value.StartsWith('"') -and $value.EndsWith('"')) {
+                  $value = $value.Substring(1, $value.Length - 2)
+                }
+                azd env set $name $value
+                $envVars += $name
+                Write-Host "✓ Set environment variable: $name"
+              }
+            }
+          }
+          Write-Host "✅ Successfully loaded $($envVars.Count) environment variables: $($envVars -join ', ')"
+          
+          # Verify required variables
+          $required = @('AWS_CLIENT_ID', 'AWS_CLIENT_SECRET', 'AWS_AUTH_URL', 'AWS_MCP_URL', 'AWS_SCOPE')
+          $missing = @()
+          foreach ($var in $required) {
+            $value = azd env get-value $var 2>$null
+            if (-not $value) {
+              $missing += $var
+            }
+          }
+          if ($missing.Count -gt 0) {
+            Write-Host "❌ Missing required environment variables: $($missing -join ', ')"
+            Write-Host "Please ensure your .env file contains all required values."
+            exit 1
+          }
+          Write-Host "✅ All required environment variables are verified"
+        } else {
+          Write-Host "❌ Error: .env file not found. Please copy .env.template to .env and fill in your values."
+          Write-Host "Run: Copy-Item .env.template .env"
+          exit 1
+        }
+    posix:
+      shell: sh
+      run: |
+        echo "🔄 Running preprovision hook..."
+        echo "Loading environment variables from .env file..."
+        if [ -f .env ]; then
+          count=0
+          while IFS='=' read -r key value || [ -n "$key" ]; do
+            # Skip empty lines and comments
+            if [ -n "$key" ] && [ "${key#\#}" = "$key" ]; then
+              # Remove leading/trailing whitespace
+              key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+              value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+              # Remove quotes if present
+              value=$(echo "$value" | sed 's/^"//;s/"$//')
+              if [ -n "$key" ] && [ -n "$value" ]; then
+                azd env set "$key" "$value"
+                echo "✓ Set environment variable: $key"
+                count=$((count + 1))
+              fi
+            fi
+          done < .env
+          echo "✅ Successfully loaded $count environment variables"
+          
+          # Verify required variables
+          required="AWS_CLIENT_ID AWS_CLIENT_SECRET AWS_AUTH_URL AWS_MCP_URL AWS_SCOPE"
+          missing=""
+          for var in $required; do
+            if ! azd env get-value "$var" >/dev/null 2>&1; then
+              missing="$missing $var"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "❌ Missing required environment variables:$missing"
+            echo "Please ensure your .env file contains all required values."
+            exit 1
+          fi
+          echo "✅ All required environment variables are verified"
+        else
+          echo "❌ Error: .env file not found. Please copy .env.template to .env and fill in your values."
+          echo "Run: cp .env.template .env"
+          exit 1
+        fi
