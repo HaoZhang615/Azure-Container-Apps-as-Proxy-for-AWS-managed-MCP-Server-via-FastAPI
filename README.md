@@ -45,8 +45,7 @@ The deployment process will:
 **Note**: The azd hooks will automatically run regardless of which environment you're using, ensuring your `.env` file is always loaded before deployment.
 
 ### 3. Set Up Copilot Studio Custom Connector
-
-1. In Copilot Studio, create a new Custom Connector
+1. In Copilot Studio, create a new Custom Connector ([learn more from full tutorial](https://github.com/microsoft/mcsmcp?tab=readme-ov-file) )
 2. Use your deployed Azure Container App URL as the base URL
 3. Configure POST requests to `/mcp` endpoint
 4. Set authentication to "No Authentication" (handled internally)
